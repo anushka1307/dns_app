@@ -1,0 +1,110 @@
+# AS Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: as-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: as
+  template:
+    metadata:
+      labels:
+        app: as
+    spec:
+      containers:
+        - name: as
+          image: nush13/as:latest
+          ports:
+            - containerPort: 53533
+              protocol: UDP
+---
+# AS Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: as-service
+spec:
+  type: NodePort
+  selector:
+    app: as
+  ports:
+    - protocol: UDP
+      port: 53533
+      targetPort: 53533
+      nodePort: 30001
+---
+# FS Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fs-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fs
+  template:
+    metadata:
+      labels:
+        app: fs
+    spec:
+      containers:
+        - name: fs
+          image: nush13/fs:latest
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+---
+# FS Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: fs-service
+spec:
+  type: NodePort
+  selector:
+    app: fs
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+      nodePort: 30002
+---
+# US Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: us-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: us
+  template:
+    metadata:
+      labels:
+        app: us
+    spec:
+      containers:
+        - name: us
+          image: nush13/us:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+---
+# US Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: us-service
+spec:
+  type: NodePort
+  selector:
+    app: us
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30003
